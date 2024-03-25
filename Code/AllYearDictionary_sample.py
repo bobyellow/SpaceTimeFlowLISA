@@ -18,15 +18,19 @@ for year in years:
     temp_str = str(temp_dict).replace('L', '')
     temp_dict_cleaned = eval(temp_str)
     # Update dictionary for the specific year with the new structure
-    flow_dicts[year] = {(k[0], k[1], year): [v] for k, v in temp_dict_cleaned.items()}
+    flow_dicts[year] = dict(((k[0], k[1], year), [v]) for k, v in temp_dict_cleaned.iteritems())
     # Update the cumulative dictionary across all years
     Allyeardict.update(flow_dicts[year])
 
 # Change Dictionary to DataFrame
 df = pd.DataFrame.from_dict(Allyeardict, orient='index', columns=['Flow'])
 df.reset_index(inplace=True)
-df[['O', 'D', 'Year']] = pd.DataFrame(df['index'].tolist(), index=df.index)
-df.drop('index', axis=1, inplace=True)
+index_list = df['index'].tolist() 
+df = df.assign(
+    O=[item[0] for item in index_list],
+    D=[item[1] for item in index_list],
+    Year=[item[2] for item in index_list]
+).drop('index', axis=1) 
 
 # Export as .csv file
 df.to_csv('yourpath/Allyeardict.csv', index=False)
@@ -40,4 +44,4 @@ df = pd.read_csv('Allyeardict.csv')
 
 # 将DataFrame转换回字典
 # 假设原始字典的键是由'O', 'D', 'Year'组成的元组，值是'Flow'
-Allyeardict_reconstructed = {(row['O'], row['D'], row['Year']): row['Flow'] for index, row in df.iterrows()}
+Allyeardict_reconstructed = dict(((row['O'], row['D'], row['Year']), row['Flow']) for index, row in df.iterrows())

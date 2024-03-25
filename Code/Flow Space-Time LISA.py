@@ -52,6 +52,21 @@ def execSpaceTimeFLOWLISA(AREAS1, AREAS2, FlowValue, FlowValue2, Time1, Time2, S
     
     time1 = Time1
     time2 = Time2
+
+    #create dictionary to extract the flow value for different times key:(O,D,T), value: flow value
+    dic_flow1 = {}
+    for key, value in flowvalue.iteritems():
+        key = (key[0],key[1],time1)
+        dic_flow1[key] = []
+        dic_flow1[key].append(value)
+    dic_flow2 = {}
+    for key, value in flowvalue2.iteritems():
+        key = (key[0],key[1],time2)
+        dic_flow2[key] = []
+        dic_flow2[key].append(value)
+
+    dic_flow4 = dic_flow1.copy()
+    dic_flow4.update(dic_flow2)
     
     # Prepare for computation based on Spatstat type
     y = flowvalue2
